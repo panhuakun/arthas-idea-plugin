@@ -1,30 +1,12 @@
 <idea-plugin>
     <id>com.github.wangji92.arthas.plugin</id>
     <name>arthas idea</name>
-    <version>2.42</version>
-    <vendor email="983433479@qq.com" url="https://github.com/WangJi92/arthas-idea-plugin">汪小哥</vendor>
+    <version>2.43</version>
 
     <description><![CDATA[
       <tag> Arthas Idea Help Tools,Help generated Arthas Common Command  <a href="https://www.yuque.com/arthas-idea-plugin"> Arthas Idea Plugin Document </a> </tag>
       <h4>Arthas helps developers in trouble-shooting issues in production environment for Java based applications without modifying code or restarting servers.</h4>
-      <h3>English:</h3>
-      <ul>
-      <li>Based on the  Arthas command generation plugin developed by IntelliJ IDEA, it supports <a href="https://arthas.aliyun.com/doc/"> Alibaba Arthas </a> official commonly used commands.</li>
-      <li>The official commands are too complicated. In order to simplify the difficulty of users, this plugin provides support for some common commands.</li>
-      <li>The plugin supports  Alibaba Arthas commands such as watch、trace、ognl static、ognl bean method、field、monitor、stack 、tt etc.</li>
-      <li>watch: Display the input/output parameter, return object, and thrown exception of specified method invocation</li>
-      <li>trace: Trace the execution time of specified method invocation.</li>
-      <li>ognl:Execute ognl expression.</li>
-      <li>monitor:Monitor method execution statistics, e.g. total/success/failure count, average rt, fail rate, etc.</li>
-      <li>stack:Display the stack trace for the specified class and method</li>
-      <li>tt:Time Tunnel</li>
-      <li>support get all spring property command、get selected spring property</li>
-      <li>logger:Print logger info, and update the logger level</li>
-      <li>Async Profiler. https://github.com/jvm-profiling-tools/async-profiler</li>
 
-
-      </ul>
-      <h3>中文：</h3>
       <ul>
       <li>基于IntelliJ IDEA开发的Alibaba Arthas 命令生成插件，支持<a href="https://arthas.aliyun.com/doc/">Alibaba Arthas</a> 官方常用的命令。</li>
       <li>官方的命令太复杂，此插件为了简化使用者的难度，提供了一些常用命令的支持</li>
@@ -42,6 +24,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+    <p>2.43-RELEASE</p>
+      <ul>
+        <li>修改热部署命令：arthas默认的安装路径优先从环境变量ARTHAS_HOME中获取</li>
+        <li>2.42的原作者信息：汪小哥 983433479@qq.com</li>
+      </ul>
     <p>2.42-RELEASE</p>
       <ul>
         <li>optimizing get compilation path</li>

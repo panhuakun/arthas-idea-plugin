@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+ARTHAS_DIR=$ARTHAS_HOME
+if [ ! -n "$ARTHAS_DIR" ]; then
+  ARTHAS_DIR=$HOME/opt/arthas
+fi
+
 TARGET_PID=
 SELECT_VALUE=${arthasIdeaPluginApplicationName}
 
@@ -158,8 +163,8 @@ exit_on_err() {
 
 # check arthas permission
 check_permission() {
-  [ ! -w "$HOME" ] &&
-    exit_on_err 1 "permission denied, $HOME is not writable."
+  [ ! -w "$ARTHAS_DIR" ] &&
+    exit_on_err 1 "permission denied, $ARTHAS_DIR is not writable."
 }
 
 createFile() {
@@ -169,25 +174,25 @@ createFile() {
 }
 
 installArthas() {
-  if [ ! -d "$HOME/opt/arthas" ]; then
-    banner_simple "arthas idea plugin make dir $HOME/opt/arthas"
-    mkdir -p $HOME/opt/arthas || return 1
+  if [ ! -d "$ARTHAS_DIR" ]; then
+    banner_simple "arthas idea plugin make dir $ARTHAS_DIR"
+    mkdir -p $ARTHAS_DIR || return 1
   fi
   # download arthas
 
-  if [ ! -f "$HOME/opt/arthas/arthas-agent.jar" ]; then
+  if [ ! -f "$ARTHAS_DIR/arthas-agent.jar" ]; then
     # 这里选择判断是否下载zip 包 没有使用 arthas-packaging-latest-version-bin.zip 这个名词 由于手动上传解压到当前目录名词可能不一致，选择一个中性的判断比较灵活
-    local temp_target_lib_zip="$HOME/opt/arthas/arthas-packaging-latest-version-bin.zip"
+    local temp_target_lib_zip="$ARTHAS_DIR/arthas-packaging-latest-version-bin.zip"
     echo "arthas idea plugin download arthas zip package ${temp_target_lib_zip} download url=${ARTHAS_PACKAGE_ZIP_DOWNLOAD_URL}"
     echo " "
     echo "$(echo $(tput setaf 1)如果网络无法访问 https://arthas.aliyun.com/download/latest_version?mirror=aliyun $(tput sgr0))"
-    echo "$(echo $(tput setaf 1)idea设置网络可以访问的arthas 完整zip包的下载地址 或者直接下载解压到服务器 $HOME/opt/arthas 目录 $(tput sgr0))"
+    echo "$(echo $(tput setaf 1)idea设置网络可以访问的arthas 完整zip包的下载地址 或者直接下载解压到服务器 $ARTHAS_DIR 目录 $(tput sgr0))"
     echo "$(echo $(tput setaf 1)如果配置的是oss 存储,arthas 命令 other分组下面 Local File Upload To Oss命令可以上传文件 有效期1年,配置到arthas zip包地址$(tput sgr0))"
     echo " "
     curl  -Lk "${ARTHAS_PACKAGE_ZIP_DOWNLOAD_URL}" -o  "${temp_target_lib_zip}" || retrun 1
-    cd "$HOME/opt/arthas" && unzip -o "${temp_target_lib_zip}"
+    cd "$ARTHAS_DIR" && unzip -o "${temp_target_lib_zip}"
   fi
-  chmod -R +x "$HOME/opt/arthas/" || return 1
+  chmod -R +x "$ARTHAS_DIR/" || return 1
 }
 # xxxClassBase64Str|xxxClassPath,xxxClass2Base64Str|xxxClass2Path
 decodeBase64CLassFile() {
@@ -203,14 +208,14 @@ decodeBase64CLassFile() {
 
 # Usage: doStartRedefine
 doStartRedefine() {
-  createFile $HOME/opt/arthas/hotSwapResult.out
-  echo $(tput bold)"arthas start command :$JAVA_HOME/bin/java -jar $HOME/opt/arthas/arthas-boot.jar --select ${SELECT_VALUE}  -c \"${arthasIdeaPluginRedefineCommand}\"  | tee $HOME/opt/arthas/hotSwapResult.out"$(tput sgr0)
-  $JAVA_HOME/bin/java -jar $HOME/opt/arthas/arthas-boot.jar --select ${SELECT_VALUE} -c "${arthasIdeaPluginRedefineCommand}" | tee $HOME/opt/arthas/hotSwapResult.out
+  createFile $ARTHAS_DIR/hotSwapResult.out
+  echo $(tput bold)"arthas start command :$JAVA_HOME/bin/java -jar $ARTHAS_DIR/arthas-boot.jar --select ${SELECT_VALUE}  -c \"${arthasIdeaPluginRedefineCommand}\"  | tee $ARTHAS_DIR/hotSwapResult.out"$(tput sgr0)
+  $JAVA_HOME/bin/java -jar $ARTHAS_DIR/arthas-boot.jar --select ${SELECT_VALUE} -c "${arthasIdeaPluginRedefineCommand}" | tee $ARTHAS_DIR/hotSwapResult.out
 }
 
 redefineResult() {
-  cat $HOME/opt/arthas/hotSwapResult.out
-  redefineResult=$(cat $HOME/opt/arthas/hotSwapResult.out | grep -E "retransform success|redefine success")
+  cat $ARTHAS_DIR/hotSwapResult.out
+  redefineResult=$(cat $ARTHAS_DIR/hotSwapResult.out | grep -E "retransform success|redefine success")
   if [ -z "$redefineResult" ]; then
     banner_simple $(echo $(tput setaf 1)arthas idea plugin hot swap error $(tput sgr0))
     exit 1
@@ -222,8 +227,8 @@ redefineResult() {
 #delete file
 doCleanFile() {
   if [ ! -z "${deleteClassFile}" ]; then
-    rm -rf $HOME/opt/arthas/hotSwap
-    echo "arthas idea plugin delete class file $HOME/opt/arthas/hotSwap ok"
+    rm -rf $ARTHAS_DIR/hotSwap
+    echo "arthas idea plugin delete class file $ARTHAS_DIR/hotSwap ok"
   fi
 }
 
@@ -232,7 +237,7 @@ main() {
 
   banner_simple "arthas idea plugin hot swap begin;start script path: $(pwd)/arthas-idea-plugin-hot-swap.sh"
 
-  check_permission
+  # check_permission
 
   installArthas
   if [ $? -ne 0 ]; then
